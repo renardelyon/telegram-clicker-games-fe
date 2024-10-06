@@ -12,6 +12,7 @@ import coin from '@/assets/coin.svg';
 import React, { useState } from 'react';
 import { TbPick } from 'react-icons/tb';
 import { BiCoinStack } from 'react-icons/bi';
+import ButtonTransparent from '@/components/ButtonTransparent';
 
 const EarnPage = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -63,10 +64,7 @@ const EarnPage = () => {
             <p className="text-left">500/500</p>
           </div>
           <div className="basis-1/2 flex justify-end">
-            <button
-              className="flex items-center bg-gray-300 bg-opacity-70 text-white font-bold py-4 px-4 rounded-lg shadow-md hover:bg-gray-600"
-              onClick={() => setIsOpen(true)}>
-              {/* Rocket Icon (You can replace with an SVG or image) */}
+            <ButtonTransparent onClick={() => setIsOpen(true)}>
               <span
                 role="img"
                 aria-label="rocket"
@@ -75,7 +73,7 @@ const EarnPage = () => {
               </span>
               {/* Boost Text */}
               BOOST
-            </button>
+            </ButtonTransparent>
           </div>
         </div>
         {clicks.map(elem => (

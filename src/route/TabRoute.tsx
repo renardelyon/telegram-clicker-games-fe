@@ -12,11 +12,12 @@ import {
   swapHorizontalOutline,
   personOutline,
 } from 'ionicons/icons';
-import EarnPage from './pages/EarnPage';
-import TaskPage from './pages/TaskPage';
+import EarnPage from '../pages/EarnPage';
+import TaskPage from '../pages/TaskPage';
 import { Redirect, Route } from 'react-router';
 import { IonReactRouter } from '@ionic/react-router';
-import LeaderboardPage from './pages/LeaderboardPage';
+import LeaderboardPage from '../pages/LeaderboardPage';
+import SwapPage from '../pages/SwapPage';
 
 const TabRoute = () => {
   return (
@@ -31,11 +32,12 @@ const TabRoute = () => {
             render={() => <LeaderboardPage />}
             exact={true}
           />
+          <Route path="/swap" render={() => <SwapPage />} exact={true} />
         </IonRouterOutlet>
 
         <IonTabBar className="py-4" slot="bottom">
           <IonTabButton tab="earn" className="tab-button" href="/earn">
-            <IonIcon icon={cashOutline} />
+            <IonIcon icon={cashOutline} className="text-5xl" />
             <span className="text-md">Earn</span>
           </IonTabButton>
           <IonTabButton tab="tasks" className="tab-button" href="/tasks">
@@ -49,7 +51,7 @@ const TabRoute = () => {
             <IonIcon icon={podiumOutline} className="text-5xl" />
             <span className="text-md">Leaderboard</span>
           </IonTabButton>
-          <IonTabButton className="tab-button" tab="swap">
+          <IonTabButton className="tab-button" tab="swap" href="/swap">
             <IonIcon icon={swapHorizontalOutline} className="text-5xl" />
             <span className="text-md">Swap</span>
           </IonTabButton>

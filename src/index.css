@@ -54,3 +54,8 @@ body {
   --color: white;
   --color-selected: rgb(253 186 116) !important; /* Set the text/icon color */  
 }
+
+* {
+  scroll-behavior: smooth
+}
+

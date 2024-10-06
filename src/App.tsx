@@ -27,7 +27,7 @@ import '@ionic/react/css/palettes/dark.always.css';
 // import '@ionic/react/css/palettes/dark.class.css';
 // import '@ionic/react/css/palettes/dark.system.css';
 
-import TabRoute from './TabRoute';
+import TabRoute from './route/TabRoute';
 
 setupIonicReact();
 
