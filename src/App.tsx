@@ -27,7 +27,7 @@ import '@ionic/react/css/palettes/dark.always.css';
 // import '@ionic/react/css/palettes/dark.class.css';
 // import '@ionic/react/css/palettes/dark.system.css';
 
-import { MyComponent } from './MyComponent';
+import TabRoute from './TabRoute';
 
 setupIonicReact();
 
@@ -35,7 +35,7 @@ function App() {
   return (
     <>
       <IonApp>
-        <MyComponent></MyComponent>
+        <TabRoute></TabRoute>
       </IonApp>
     </>
   );
