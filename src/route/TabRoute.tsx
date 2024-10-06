@@ -18,6 +18,8 @@ import { Redirect, Route } from 'react-router';
 import { IonReactRouter } from '@ionic/react-router';
 import LeaderboardPage from '../pages/LeaderboardPage';
 import SwapPage from '../pages/SwapPage';
+import LanguagePage from '@/pages/LanguagePage';
+import ReferralPage from '@/pages/ReferralPage';
 
 const TabRoute = () => {
   return (
@@ -25,6 +27,7 @@ const TabRoute = () => {
       <IonTabs>
         <IonRouterOutlet>
           <Redirect exact path="/" to="/earn" />
+          <Redirect exact path="/account" to="/account/referrals" />
           <Route path="/earn" render={() => <EarnPage />} exact={true} />
           <Route path="/tasks" render={() => <TaskPage />} exact={true} />
           <Route
@@ -33,6 +36,16 @@ const TabRoute = () => {
             exact={true}
           />
           <Route path="/swap" render={() => <SwapPage />} exact={true} />
+          <Route
+            path="/account/language"
+            exact={true}
+            render={() => <LanguagePage />}
+          />
+          <Route
+            path="/account/referrals"
+            exact={true}
+            render={() => <ReferralPage />}
+          />
         </IonRouterOutlet>
 
         <IonTabBar className="py-4" slot="bottom">
@@ -55,7 +68,7 @@ const TabRoute = () => {
             <IonIcon icon={swapHorizontalOutline} className="text-5xl" />
             <span className="text-md">Swap</span>
           </IonTabButton>
-          <IonTabButton className="tab-button" tab="account">
+          <IonTabButton className="tab-button" tab="account" href="/account">
             <IonIcon icon={personOutline} className="text-5xl" />
             <span className="text-md">Account</span>
           </IonTabButton>
