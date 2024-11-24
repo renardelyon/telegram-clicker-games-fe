@@ -12,8 +12,8 @@
 }
 
 :root {
-  --font-pixel: "Press Start 2P", monospace;
-  --font-arimo: "Arimo", monospace;
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-arimo: 'Arimo', monospace;
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -26,6 +26,14 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+h6 {
+  @apply text-[0.875rem];
+}
+
+h2 {
+  @apply text-3xl;
 }
 
 a {
@@ -52,14 +60,17 @@ body {
 /* Define the color for the selected tab */
 .tab-button {
   --color: white;
-  --color-selected: rgb(253 186 116) !important; /* Set the text/icon color */  
+  --color-selected: rgb(253 186 116) !important; /* Set the text/icon color */
 }
 
 * {
-  scroll-behavior: smooth
+  scroll-behavior: smooth;
 }
 
 .ion-color-danger {
   --ion-color-contrast: #ffffff !important; /* Set text color to white */
 }
 
+ion-card {
+  margin: 0;
+}

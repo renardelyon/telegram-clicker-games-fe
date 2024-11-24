@@ -11,7 +11,7 @@ const initialValue: UserData = {
       click_count: 0,
       energy: 0,
       last_energy_update: '',
-      max_energy: 0,
+      base_energy: 0,
       mining_rate: 0,
       total_balance: 0,
     },
@@ -39,7 +39,7 @@ const createUserSlice: StateCreator<
 > = set => {
   return {
     ...initialValue,
-    setUserData: val => set(state => ({ ...state, ...val })),
+    setUserData: val => set(state => ({ ...state, user: val })),
   };
 };
 

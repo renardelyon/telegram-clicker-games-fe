@@ -3,7 +3,7 @@ export type TGameState = {
   balance: number;
   total_balance: number;
   energy: number;
-  max_energy: number;
+  base_energy: number;
   last_energy_update: string;
   mining_rate: number;
 };

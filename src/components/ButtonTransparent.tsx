@@ -7,8 +7,8 @@ const ButtonTransparent: React.FC<TButtonTransparent> = ({
 }) => {
   return (
     <button
-      className={`${className} flex items-center bg-gray-300 bg-opacity-70 
-      text-white font-bold py-4 px-4 rounded-lg shadow-md hover:bg-gray-600`}
+      className={`${className ?? ''} flex items-center bg-gray-300 bg-opacity-70 
+      text-white font-bold p-5 rounded-lg shadow-md hover:bg-gray-600`}
       onClick={onClick}>
       {children}
     </button>

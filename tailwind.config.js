@@ -35,7 +35,7 @@ export default {
       addBase({});
       addComponents({
         '.container': {
-          '@apply max-w-[77.5rem] mx-auto pt-5 md:px-10 lg:px-16 xl:max-w-[87.5rem]':
+          '@apply max-w-[77.5rem] mx-auto p-5 md:px-10 lg:px-16 xl:max-w-[87.5rem]':
             {},
         },
         '.h1': {
@@ -43,8 +43,7 @@ export default {
             {},
         },
         '.h2': {
-          '@apply text-[1.75rem] leading-[2.5rem] md:text-[2rem] md:leading-[2.5rem] lg:text-[2.5rem] lg:leading-[3.5rem] xl:text-[3rem] xl:leading-tight':
-            {},
+          '@apply text-[16px] leading-[2.5rem]': {},
         },
         '.h3': {
           '@apply text-[2rem] leading-normal md:text-[2.5rem]': {},
