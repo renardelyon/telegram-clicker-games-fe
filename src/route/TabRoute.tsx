@@ -4,6 +4,7 @@ import {
   IonTabButton,
   IonIcon,
   IonRouterOutlet,
+  IonToast,
 } from '@ionic/react';
 import {
   cashOutline,
@@ -20,8 +21,70 @@ import LeaderboardPage from '../pages/LeaderboardPage';
 import SwapPage from '../pages/SwapPage';
 import LanguagePage from '@/pages/LanguagePage';
 import ReferralPage from '@/pages/ReferralPage';
+import { useGetProfile, useUserSignIn } from '@/api/authUser';
+import { useEffect, useState } from 'react';
+import useBoundStore from '@/store/store';
+import errorHandler from '@/utils/error';
 
 const TabRoute = () => {
+  const [signInSuccessStatus, setSignInSuccessStatus] = useState(false);
+  const resetErrorToast = useBoundStore.use.resetErrorToast();
+  const setErrorToast = useBoundStore.use.setErrorToast();
+  const errToastIsOpen = useBoundStore.use.isOpen();
+  const errToastMsg = useBoundStore.use.message();
+
+  const signInMutate = useUserSignIn({
+    onSuccess: () => {
+      setSignInSuccessStatus(true);
+      resetErrorToast();
+    },
+    onError: err => {
+      errorHandler({
+        error: err,
+        axiosErrorHandlerFn: errMsg => {
+          setErrorToast({ isOpen: true, message: errMsg || '' });
+        },
+        generalErrorHandlerFn: err => {
+          setErrorToast({ isOpen: true, message: err.message || '' });
+        },
+      });
+    },
+  });
+
+  useEffect(() => {
+    signInMutate.mutate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const {
+    data: profileData,
+    error: profileError,
+    isError: profileIsError,
+    isSuccess: profileIsSuccess,
+  } = useGetProfile({ enabled: signInSuccessStatus });
+
+  const setUserData = useBoundStore.use.setUserData();
+
+  useEffect(() => {
+    if (profileIsSuccess) {
+      setUserData(profileData?.data?.data);
+      resetErrorToast();
+    }
+
+    if (profileIsError) {
+      errorHandler({
+        error: profileError,
+        axiosErrorHandlerFn: errMsg => {
+          setErrorToast({ isOpen: true, message: errMsg || '' });
+        },
+        generalErrorHandlerFn: err => {
+          setErrorToast({ isOpen: true, message: err.message || '' });
+        },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [profileData, profileError, profileIsError, profileIsSuccess]);
+
   return (
     <IonReactRouter>
       <IonTabs>
@@ -74,6 +137,17 @@ const TabRoute = () => {
           </IonTabButton>
         </IonTabBar>
       </IonTabs>
+      <IonToast
+        isOpen={errToastIsOpen}
+        color="danger"
+        message={errToastMsg}
+        swipeGesture="vertical"
+        position="top"
+        onDidDismiss={() => {
+          resetErrorToast();
+        }}
+        cssClass="toast-error"
+      />
     </IonReactRouter>
   );
 };
