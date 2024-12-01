@@ -111,27 +111,39 @@ const TabRoute = () => {
           />
         </IonRouterOutlet>
 
-        <IonTabBar className="py-4" slot="bottom">
-          <IonTabButton tab="earn" className="tab-button" href="/earn">
+        <IonTabBar className="py-4 bg-[#000F29] rounded-t-2xl" slot="bottom">
+          <IonTabButton
+            tab="earn"
+            className="tab-button bg-[#000F29]"
+            href="/earn">
             <IonIcon icon={cashOutline} className="text-5xl" />
             <span className="text-md">Earn</span>
           </IonTabButton>
-          <IonTabButton tab="tasks" className="tab-button" href="/tasks">
+          <IonTabButton
+            tab="tasks"
+            className="tab-button bg-[#000F29]"
+            href="/tasks">
             <IonIcon icon={checkboxOutline} className="text-5xl" />
             <span className="text-md">Tasks</span>
           </IonTabButton>
           <IonTabButton
-            className="tab-button"
+            className="tab-button bg-[#000F29]"
             tab="leaderboard"
             href="/leaderboard">
             <IonIcon icon={podiumOutline} className="text-5xl" />
             <span className="text-md">Leaderboard</span>
           </IonTabButton>
-          <IonTabButton className="tab-button" tab="swap" href="/swap">
+          <IonTabButton
+            className="tab-button bg-[#000F29]"
+            tab="swap"
+            href="/swap">
             <IonIcon icon={swapHorizontalOutline} className="text-5xl" />
             <span className="text-md">Swap</span>
           </IonTabButton>
-          <IonTabButton className="tab-button" tab="account" href="/account">
+          <IonTabButton
+            className="tab-button bg-[#000F29]"
+            tab="account"
+            href="/account">
             <IonIcon icon={personOutline} className="text-5xl" />
             <span className="text-md">Account</span>
           </IonTabButton>

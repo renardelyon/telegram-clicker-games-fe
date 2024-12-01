@@ -53,24 +53,6 @@ body {
   min-height: 100vh;
 }
 
-.boost-button {
-  --background: #919191;
-}
-
-/* Define the color for the selected tab */
-.tab-button {
-  --color: white;
-  --color-selected: rgb(253 186 116) !important; /* Set the text/icon color */
-}
-
 * {
   scroll-behavior: smooth;
-}
-
-.ion-color-danger {
-  --ion-color-contrast: #ffffff !important; /* Set text color to white */
-}
-
-ion-card {
-  margin: 0;
 }
