@@ -41,9 +41,16 @@
   color: #888;
 }
 
+#account-outlet h2,
 #leaderboard-page h2 {
   @apply font-pixel;
 }
+
+#account-outlet p {
+  @apply text-base;
+}
+
+
 
 .boost-button {
   --background: #919191;
