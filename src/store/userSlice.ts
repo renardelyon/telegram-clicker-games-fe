@@ -40,6 +40,47 @@ const createUserSlice: StateCreator<
   return {
     ...initialValue,
     setUserData: val => set(state => ({ ...state, user: val })),
+    addBalance: val =>
+      set(state => ({
+        user: {
+          ...state.user,
+          game_states: {
+            ...state.user.game_states,
+            balance: state.user.game_states.balance + val,
+            total_balance: state.user.game_states.total_balance + val,
+          },
+        },
+      })),
+    decrementEnergy: val =>
+      set(state => ({
+        user: {
+          ...state.user,
+          game_states: {
+            ...state.user.game_states,
+            energy: state.user.game_states.energy - val,
+          },
+        },
+      })),
+    incrementEnergy: val =>
+      set(state => ({
+        user: {
+          ...state.user,
+          game_states: {
+            ...state.user.game_states,
+            energy: state.user.game_states.energy + val,
+          },
+        },
+      })),
+    setEnergy: val =>
+      set(state => ({
+        user: {
+          ...state.user,
+          game_states: {
+            ...state.user.game_states,
+            energy: val,
+          },
+        },
+      })),
   };
 };
 

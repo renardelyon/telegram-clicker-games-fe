@@ -10,6 +10,9 @@ import {
 } from '@tanstack/react-query';
 import axios, { AxiosResponse } from 'axios';
 
+export const INVALIDATE_AUTH_QUERY_KEY = 'auth';
+export const INVALIDATE_PROFILE_QUERY_KEY = 'profile';
+
 export const useGetProfile = (
   options: Omit<
     UseQueryOptions<AxiosResponse<TBEResponse<TUserProfile>>>,
@@ -21,9 +24,9 @@ export const useGetProfile = (
     Error,
     AxiosResponse<TBEResponse<TUserProfile>, any>
   >({
-    queryKey: ['auth', 'profile'],
+    queryKey: [INVALIDATE_AUTH_QUERY_KEY, INVALIDATE_PROFILE_QUERY_KEY],
     queryFn: ({ signal }) => {
-      return axios.get(`${VITE_API_URL}/profile`, { signal });
+      return axios.get(`${VITE_API_URL}/auth/profile`, { signal });
     },
     ...options,
   });
@@ -39,7 +42,7 @@ export const useUserSignIn = (
 ) => {
   return useMutation<AxiosResponse<any, any>, Error, void>({
     mutationFn: () => {
-      return axios.post(`${VITE_API_URL}/sign-in`);
+      return axios.post(`${VITE_API_URL}/auth/sign-in`);
     },
     ...mutationOptions,
   });

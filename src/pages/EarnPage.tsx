@@ -9,30 +9,92 @@ import {
   IonToolbar,
 } from '@ionic/react';
 import coin from '@/assets/coin.svg';
-import React, { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { TbPick } from 'react-icons/tb';
 import ButtonTransparent from '@/components/ButtonTransparent';
 import useBoundStore from '@/store/store';
+import useTaps from '@/hooks/useTaps';
+import { useGetUpgrades } from '@/api/upgrades';
+import UpgradeEnum from '@/enum/UpgradeEnum';
+import errorHandler from '@/utils/error';
 
 const EarnPage = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [clicks, setClicks] = useState<{ [key: string]: number }[]>([]);
 
+  const setErrorToast = useBoundStore.use.setErrorToast();
+  const incrementEnergy = useBoundStore.use.incrementEnergy();
+  const setEnergy = useBoundStore.use.setEnergy();
   const states = useBoundStore.use.user().game_states;
 
-  const handleClick = (e: React.MouseEvent) => {
-    const newClick = {
-      id: Date.now(),
-      left: e.clientX,
-      top: e.clientY,
-    };
+  const {
+    data: upgradeData,
+    error: upgradeErr,
+    isError: upgradeIsError,
+  } = useGetUpgrades();
 
-    setClicks(prev => [...prev, newClick]);
+  useEffect(() => {
+    if (upgradeIsError) {
+      errorHandler({
+        error: upgradeErr,
+        axiosErrorHandlerFn: errMsg => {
+          setErrorToast({ isOpen: true, message: errMsg || '' });
+        },
+        generalErrorHandlerFn: err => {
+          setErrorToast({ isOpen: true, message: err.message || '' });
+        },
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [upgradeIsError, upgradeErr]);
 
-    setTimeout(() => {
-      setClicks(prev => prev.filter(click => click.id !== newClick.id));
+  const multiTapUpgrade = useMemo(() => {
+    return upgradeData?.data.data
+      ?.filter(val => val.upgrade_detail.effect === UpgradeEnum.MULTI_TAP)
+      .shift();
+  }, [upgradeData]);
+
+  const energyRechargeUpgrade = useMemo(() => {
+    return upgradeData?.data.data
+      ?.filter(val => val.upgrade_detail.effect === UpgradeEnum.ENERGY_RECHARGE)
+      .shift();
+  }, [upgradeData]);
+
+  const maxEnergy = useMemo(() => {
+    const energyLimitUpgrade = upgradeData?.data.data
+      ?.filter(val => val.upgrade_detail.effect === UpgradeEnum.ENERGY_LIMIT)
+      .shift();
+
+    return states.base_energy * (energyLimitUpgrade?.upgrade.level || 1);
+  }, [upgradeData, states.base_energy]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (states.energy >= maxEnergy) {
+        return;
+      }
+
+      const incrementedEnergy = (() => {
+        const incrementUnit = energyRechargeUpgrade?.upgrade.level || 0;
+        if (states.energy + incrementUnit > maxEnergy) {
+          return states.energy + incrementUnit - maxEnergy;
+        }
+
+        return incrementUnit;
+      })();
+
+      incrementEnergy(incrementedEnergy);
     }, 1000);
-  };
+
+    return () => clearInterval(interval);
+  }, [
+    states.energy,
+    maxEnergy,
+    incrementEnergy,
+    setEnergy,
+    energyRechargeUpgrade?.upgrade.level,
+  ]);
+
+  const { clicks, handleClick } = useTaps(multiTapUpgrade);
 
   return (
     <>
@@ -75,7 +137,7 @@ const EarnPage = () => {
           />
           <h2 className="text-white font-pixel mt-4">${states.balance}</h2>
           <p className="text-white font-pixel text-xl mt-2">
-            {states.energy}/{states.base_energy}
+            {states.energy}/{maxEnergy}
           </p>
         </div>
 

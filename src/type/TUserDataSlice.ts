@@ -6,6 +6,10 @@ type UserData = {
 
 type UserDataAction = {
   setUserData: (val?: TUserProfile) => void;
+  addBalance: (val: number) => void;
+  decrementEnergy: (val: number) => void;
+  incrementEnergy: (val: number) => void;
+  setEnergy: (val: number) => void;
 };
 
 type UserDataSlice = UserData & UserDataAction;
