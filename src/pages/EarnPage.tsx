@@ -1,6 +1,5 @@
-import { IonCard, IonCardContent } from '@ionic/react';
+import { IonCard, IonCardContent, IonProgressBar } from '@ionic/react';
 
-import coin from '@/assets/coin.svg';
 import { useEffect, useMemo, useState } from 'react';
 import { TbPick } from 'react-icons/tb';
 import ButtonTransparent from '@/components/ButtonTransparent';
@@ -10,6 +9,7 @@ import { useGetUpgrades } from '@/api/upgrades';
 import UpgradeEnum from '@/enum/UpgradeEnum';
 import errorHandler from '@/utils/error';
 import BoosterModal from '@/components/BoosterModal';
+import '@/style/css/EarnPage.css';
 
 const EarnPage = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -90,23 +90,25 @@ const EarnPage = () => {
 
   return (
     <>
-      <div className="relative container h-screen w-screen bg-no-repeat bg-cover bg-center">
+      <div className="relative container h-screen w-screen bg-cave bg-no-repeat bg-cover bg-center">
         {/* Header Section */}
         <div className="absolute top-0 left-0 right-0 flex justify-between items-center py-7 px-4 text-white font-pixel text-lg z-10">
           <div className="flex items-center h-full">
-            <ButtonTransparent onClick={() => setIsOpen(true)}>
+            <ButtonTransparent
+              onClick={() => setIsOpen(true)}
+              className="py-2 px-3 grad-color-bg-meme-coin">
               <span
                 role="img"
                 aria-label="rocket"
-                className="mr-2 text-2xl justify-self-start -mt-3">
+                className="mr-2 text-2xl translate-y-[-5px]">
                 🚀
               </span>
               {/* Boost Text */}
               <h6>BOOST</h6>
             </ButtonTransparent>
           </div>
-          <div className="flex items-center h-full">
-            <IonCard className="bg-gray-300 bg-opacity-70 rounded-lg shadow-md">
+          <div className="ion-card-mining flex items-center h-full">
+            <IonCard className="grad-color-bg-meme-coin bg-opacity-70 rounded-lg shadow-md">
               <IonCardContent className="font-pixel text-3xl text-white">
                 <div className="flex items-center justify-center gap-4">
                   <TbPick className="mb-1" />
@@ -119,18 +121,44 @@ const EarnPage = () => {
 
         {/* Main Coin Section */}
         <div className="flex flex-col items-center justify-center h-full">
+          {/* Coins Section */}
+          <div className="flex items-center justify-center">
+            <img
+              src="https://via.placeholder.com/40" // Replace with actual coin image URL
+              alt="Coin"
+              className="w-10 h-10"
+            />
+            <h2 className="text-white font-pixel ml-5">${states.balance}</h2>
+          </div>
           <img
-            src={coin}
+            src="/doge_char.png"
             id="coin-click"
             alt="coin"
-            className="w-auto h-4/6"
+            className="w-auto"
             onClick={handleClick}
             aria-hidden
           />
-          <h2 className="text-white font-pixel mt-4">${states.balance}</h2>
-          <p className="text-white font-pixel text-xl mt-2">
-            {states.energy}/{maxEnergy}
-          </p>
+          <div className="w-full max-w-md mx-auto mt-6">
+            {/* Progress Bar Container */}
+            <div className="relative">
+              <IonProgressBar
+                value={0.6}
+                className="h-4 progress-bar-energy rounded-2xl"
+              />
+
+              {/* Energy Info */}
+              <div className="flex justify-end items-center mt-2 text-white text-sm font-pixel">
+                <img
+                  src="/path/to/lightning-icon.png" // Replace with your lightning icon path
+                  alt="Lightning"
+                  className="w-5 h-5 mr-2"
+                />
+                <p className="text-white font-pixel text-xl mt-2">
+                  {states.energy}/{maxEnergy}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Click Effects */}
@@ -142,19 +170,6 @@ const EarnPage = () => {
             +1
           </span>
         ))}
-
-        {/* Footer Section */}
-        <div className="absolute bottom-0 left-0 right-0 flex justify-between items-center px-6 pb-4 text-white font-pixel text-md">
-          <div className="basis-1/2 text-left">500/500</div>
-          <ButtonTransparent
-            onClick={() => setIsOpen(true)}
-            className="basis-1/2 text-right">
-            <span role="img" aria-label="rocket" className="text-2xl -mt-2">
-              🚀
-            </span>
-            BOOST
-          </ButtonTransparent>
-        </div>
         {/* Modal */}
         <BoosterModal isOpen={isOpen} setIsOpen={setIsOpen} />
       </div>

@@ -26,6 +26,12 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --gradient-color-meme-coin: linear-gradient(
+    to right,
+    #020d2f,
+    #0841c9,
+    #1d97f1
+  );
 }
 
 h6 {

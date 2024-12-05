@@ -1,0 +1,12 @@
+.progress-bar-energy {
+  --background: #e7e7e7;
+  --progress-background: var(--gradient-color-meme-coin);
+}
+
+.ion-card-mining .card-content-ios {
+  @apply py-2 px-3;
+}
+
+.grad-color-bg-meme-coin {
+  background: var(--gradient-color-meme-coin);
+}
