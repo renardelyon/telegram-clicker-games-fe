@@ -11,9 +11,11 @@ export default {
       fontFamily: {
         pixel: 'var(--font-pixel)',
         arimo: 'var(--font-arimo)',
+        inter: ['Inter', 'sans-serif'],
       },
       backgroundImage: {
         kingdom: "url('/kingdom scenery.png')",
+        cave: "url('/cave_blue_theme.png')",
       },
       keyframes: {
         fadeUp: {

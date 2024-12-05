@@ -1,0 +1,72 @@
+.multi-tap-modal-content {
+  --background: #203a68; /* Dark Blue */
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.close-icon {
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.multi-tap-modal {
+  --height: 40%;
+  --border-radius: 30px;
+  --border-color: #7ec3f6;
+  --border-style: solid solid none;
+  --border-width: 2px;
+}
+
+.modal-body {
+  padding: 30px;
+}
+
+.modal-body .title {
+  font-size: 1.5rem;
+  margin-bottom: 20px;
+}
+
+.modal-body .avatar {
+  margin: 20px auto;
+  width: 80px;
+  height: 80px;
+  background: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+  color: #1a2b5a;
+}
+
+.modal-body .description {
+  font-size: 1rem;
+}
+
+.modal-body .description-bold {
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.modal-body .price {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+  font-size: 1.2rem;
+}
+
+.modal-body .price ion-icon {
+  margin-right: 5px;
+}
+
+.get-now-button {
+  margin-top: 20px;
+  --ion-color-primary-contrast: white;
+}

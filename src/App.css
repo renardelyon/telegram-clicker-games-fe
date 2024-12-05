@@ -50,7 +50,9 @@
   @apply text-base;
 }
 
-
+ion-content {
+  --background: url('/cave_blue_theme.png') no-repeat center/cover;
+}
 
 .boost-button {
   --background: #919191;
@@ -68,4 +70,25 @@
 
 ion-card {
   margin: 0;
+}
+
+.booster-item-modal {
+  --height: 40%;
+}
+
+.multi-tap-modal-content {
+  --background: #1a2b5a; /* Dark Blue */
+  color: white;
+  text-align: center;
+  padding: 20px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.close-icon {
+  font-size: 24px;
+  cursor: pointer;
 }

@@ -1,13 +1,5 @@
-import {
-  IonButton,
-  IonButtons,
-  IonCard,
-  IonCardContent,
-  IonHeader,
-  IonModal,
-  IonTitle,
-  IonToolbar,
-} from '@ionic/react';
+import { IonCard, IonCardContent } from '@ionic/react';
+
 import coin from '@/assets/coin.svg';
 import { useEffect, useMemo, useState } from 'react';
 import { TbPick } from 'react-icons/tb';
@@ -17,10 +9,10 @@ import useTaps from '@/hooks/useTaps';
 import { useGetUpgrades } from '@/api/upgrades';
 import UpgradeEnum from '@/enum/UpgradeEnum';
 import errorHandler from '@/utils/error';
+import BoosterModal from '@/components/BoosterModal';
 
 const EarnPage = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-
   const setErrorToast = useBoundStore.use.setErrorToast();
   const incrementEnergy = useBoundStore.use.incrementEnergy();
   const setEnergy = useBoundStore.use.setEnergy();
@@ -163,18 +155,8 @@ const EarnPage = () => {
             BOOST
           </ButtonTransparent>
         </div>
-
         {/* Modal */}
-        <IonModal trigger="open-modal" isOpen={isOpen}>
-          <IonHeader>
-            <IonToolbar>
-              <IonButtons slot="start">
-                <IonButton onClick={() => setIsOpen(false)}>Cancel</IonButton>
-              </IonButtons>
-              <IonTitle>Boost</IonTitle>
-            </IonToolbar>
-          </IonHeader>
-        </IonModal>
+        <BoosterModal isOpen={isOpen} setIsOpen={setIsOpen} />
       </div>
     </>
   );
