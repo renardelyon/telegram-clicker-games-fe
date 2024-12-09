@@ -8,6 +8,12 @@ export default {
       animation: {
         fadeUp: 'fadeUp 1s ease-out',
       },
+      colors: {
+        primary: {
+          1: '#203A68',
+          3: '#1D97F1',
+        },
+      },
       fontFamily: {
         pixel: 'var(--font-pixel)',
         arimo: 'var(--font-arimo)',
