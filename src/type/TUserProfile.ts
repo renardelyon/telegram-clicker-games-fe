@@ -9,6 +9,7 @@ export type TUserProfile = {
   first_name: string;
   last_name?: string;
   user_name: string;
+  photo_url: string;
   updated_at?: string;
   deleted_at?: string;
   created_at: string;

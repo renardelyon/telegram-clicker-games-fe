@@ -109,7 +109,9 @@ const LeaderboardPage = () => {
                 </IonThumbnail>
                 {/* User Details */}
                 <div className="text-left">
-                  <div className="text-lg font-semibold">{user.user_name}</div>
+                  <div className="text-lg font-semibold">
+                    {user.user_name || `${user.first_name} ${user.last_name}`}
+                  </div>
                   <div className="text-sm text-white">
                     ${user.game_states.balance}
                   </div>

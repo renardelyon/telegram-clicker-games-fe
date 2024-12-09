@@ -54,9 +54,6 @@ const TaskPage = () => {
         }
       });
 
-      // TODO delete
-      console.log(taskRecurrentTemp);
-
       setTaskDaily(taskDailyTemp);
       setTaskOneTime(taskOneTimeTemp);
       setTaskRecurrent(taskRecurrentTemp);

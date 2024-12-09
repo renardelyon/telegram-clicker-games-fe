@@ -1,2 +1,9 @@
-export const { VITE_API_URL, DEV, VITE_CACHE_TIME, VITE_SEND_DELAY } =
-  import.meta.env;
+export const {
+  VITE_API_URL,
+  DEV,
+  VITE_CACHE_TIME,
+  VITE_SEND_DELAY,
+  VITE_BOT_APP,
+  VITE_SHARE_URL,
+  VITE_TELEGRAM_INVITE_TEXT,
+} = import.meta.env;

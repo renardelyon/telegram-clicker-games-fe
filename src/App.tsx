@@ -30,14 +30,12 @@ import '@ionic/react/css/palettes/dark.always.css';
 import TabRoute from './route/TabRoute';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
-import setupGlobalAxiosInterceptor from './api/setupGlobalAxiosInterceptor';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 300 * 1000 } },
 });
 
 setupIonicReact();
-setupGlobalAxiosInterceptor();
 
 function App() {
   return (

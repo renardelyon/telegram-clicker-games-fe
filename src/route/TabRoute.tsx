@@ -25,6 +25,8 @@ import { useGetProfile, useUserSignIn } from '@/api/authUser';
 import { useEffect, useState } from 'react';
 import useBoundStore from '@/store/store';
 import errorHandler from '@/utils/error';
+import setupGlobalAxiosInterceptor from '@/api/setupGlobalAxiosInterceptor';
+import { useAddReferral } from '@/api/referral';
 
 const TabRoute = () => {
   const [signInSuccessStatus, setSignInSuccessStatus] = useState(false);
@@ -51,8 +53,46 @@ const TabRoute = () => {
     },
   });
 
-  useEffect(() => {
+  const referralMutate = useAddReferral({
+    onSuccess: () => {
+      resetErrorToast();
+    },
+    onError: err => {
+      errorHandler({
+        error: err,
+        axiosErrorHandlerFn: errMsg => {
+          setErrorToast({ isOpen: true, message: errMsg || '' });
+        },
+        generalErrorHandlerFn: err => {
+          setErrorToast({ isOpen: true, message: err.message || '' });
+        },
+      });
+    },
+  });
+
+  const init = async () => {
+    if (typeof window == 'undefined') {
+      return;
+    }
+
+    const WebApp = (await import('@twa-dev/sdk')).default;
+    WebApp.ready();
+
+    setupGlobalAxiosInterceptor(WebApp.initData);
+
     signInMutate.mutate();
+    if (WebApp.initDataUnsafe.start_param) {
+      console.log({
+        referred_by: Number(WebApp.initDataUnsafe.start_param),
+      });
+      referralMutate.mutate({
+        referred_by: Number(WebApp.initDataUnsafe.start_param),
+      });
+    }
+  };
+
+  useEffect(() => {
+    init();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
