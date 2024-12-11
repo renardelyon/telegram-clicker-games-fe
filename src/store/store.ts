@@ -5,7 +5,9 @@ import { mountStoreDevtool } from 'simple-zustand-devtools';
 import { UseBoundStore, StoreApi, create } from 'zustand';
 import createUserSlice from './userSlice';
 import createErrorToastSlice from './errorToastSlice';
+import createInitDataSlice from './initDataSlice';
 import { ErrorToastSlice } from '@/type/TErrorToastSlice';
+import { InitDataSlice } from '@/type/TInitData';
 
 const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
   _store: S,
@@ -20,11 +22,12 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
   return store;
 };
 
-type GroupedSlice = UserDataSlice & ErrorToastSlice;
+type GroupedSlice = UserDataSlice & ErrorToastSlice & InitDataSlice;
 
 const useBoundStoreBase = create<GroupedSlice>()((...a) => ({
   ...createUserSlice(...a),
   ...createErrorToastSlice(...a),
+  ...createInitDataSlice(...a),
 }));
 
 if (DEV) {

@@ -25,7 +25,6 @@ import { useGetProfile, useUserSignIn } from '@/api/authUser';
 import { useEffect, useState } from 'react';
 import useBoundStore from '@/store/store';
 import errorHandler from '@/utils/error';
-import setupGlobalAxiosInterceptor from '@/api/setupGlobalAxiosInterceptor';
 import { useAddReferral } from '@/api/referral';
 
 const TabRoute = () => {
@@ -78,13 +77,8 @@ const TabRoute = () => {
     const WebApp = (await import('@twa-dev/sdk')).default;
     WebApp.ready();
 
-    setupGlobalAxiosInterceptor(WebApp.initData);
-
     signInMutate.mutate();
     if (WebApp.initDataUnsafe.start_param) {
-      console.log({
-        referred_by: Number(WebApp.initDataUnsafe.start_param),
-      });
       referralMutate.mutate({
         referred_by: Number(WebApp.initDataUnsafe.start_param),
       });

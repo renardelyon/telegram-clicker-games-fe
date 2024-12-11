@@ -9,15 +9,57 @@ import {
   IonIcon,
 } from '@ionic/react';
 import { chevronForwardOutline } from 'ionicons/icons';
-import BoosterItemDetailModal from './BoosterItemDetailModal';
+import BoosterItemDetailModal, {
+  BoosterItemDetailModalProps,
+} from './BoosterItemDetailModal';
+import CoinSVG from '@/assets/coin_pixel.svg';
+import { PiHandTapFill } from 'react-icons/pi';
+import { TUpgradeOverall } from '@/type/TUpgrade';
+import useBoundStore from '@/store/store';
+import { TbRecharging } from 'react-icons/tb';
+import { FaBoltLightning } from 'react-icons/fa6';
+import { WithoutFunctions } from '@/utils/type';
+import { useEffect, useState } from 'react';
+import UpgradeEnum from '@/enum/UpgradeEnum';
 
-const BoosterModal: React.FC<TBoosterModalProps> = ({ isOpen, setIsOpen }) => {
-  const boosters = [
-    { name: 'Multitap', price: 1000 },
-    { name: 'Energy Limit', price: 200 },
-    { name: 'Recharging Speed', price: 2000 },
-    { name: 'Tap Bot', price: 200000 },
-  ];
+type ModalProps = Omit<WithoutFunctions<BoosterItemDetailModalProps>, 'isOpen'>;
+
+const BoosterModal: React.FC<TBoosterModalProps> = ({
+  isOpen,
+  setIsOpen,
+  upgrades,
+}) => {
+  const {
+    game_states: { balance },
+  } = useBoundStore.use.user();
+
+  const boosterItemModalPropsValInit: ModalProps = {
+    id: '',
+    amount: '',
+    description: '',
+    name: '',
+    effect: UpgradeEnum.ENERGY_LIMIT,
+  };
+
+  const [innerIsOpen, setInnerIsOpen] = useState<boolean>(false);
+  const [bmipVal, setBmipVal] = useState<ModalProps>(
+    boosterItemModalPropsValInit,
+  );
+
+  useEffect(() => {
+    if (!innerIsOpen) {
+      setBmipVal(boosterItemModalPropsValInit);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [innerIsOpen]);
+
+  const handleClick =
+    ({ amount, description, effect, id, name }: ModalProps) =>
+    () => {
+      setBmipVal({ amount, description, name, effect, id });
+      setInnerIsOpen(true);
+    };
+
   return (
     <IonModal isOpen={isOpen}>
       <IonHeader>
@@ -37,55 +79,92 @@ const BoosterModal: React.FC<TBoosterModalProps> = ({ isOpen, setIsOpen }) => {
         {/* Coins Section */}
         <div className="flex items-center justify-center my-24">
           <img
-            src="https://via.placeholder.com/40" // Replace with actual coin image URL
+            src={CoinSVG} // Replace with actual coin image URL
             alt="Coin"
-            className="w-10 h-10"
+            className="w-14 h-14"
           />
-          <span className="ml-4 text-2xl font-pixel">$2,747,874</span>
+          <span className="ml-4 text-2xl font-pixel">{balance}</span>
         </div>
 
         {/* Booster List */}
         <div className="px-6">
-          {boosters.map((booster, index) => (
-            <div
-              key={index}
-              className="flex items-center justify-between bg-[#203A68] text-white p-4 mb-4 rounded-3xl shadow-lg">
-              {/* Booster Icon */}
-              <div className="flex items-center">
-                <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-4">
-                  <img
-                    src="https://via.placeholder.com/40" // Replace with actual booster icon URL
-                    alt={booster.name}
-                    className="w-6 h-6"
-                  />
-                </div>
-                <div className="font-inter">
-                  <div className="font-semibold">{booster.name}</div>
-                  <div className="flex items-center text-sm font-normal">
-                    <img
-                      src="https://via.placeholder.com/16" // Replace with coin icon
-                      alt="Coin Icon"
-                      className="w-4 h-4 mr-1"
-                    />
-                    {booster.price.toLocaleString()}
+          {upgrades.map((upgrade, index) => {
+            const {
+              upgrade: { level },
+              upgrade_detail: {
+                id,
+                description,
+                base_cost,
+                inc_multiplier,
+                name,
+                effect,
+              },
+            } = upgrade;
+
+            const amount = base_cost * inc_multiplier * level;
+
+            let upgradeIcon;
+            switch (effect) {
+              case UpgradeEnum.ENERGY_LIMIT:
+                upgradeIcon = <FaBoltLightning className="w-9 h-9 mr-4" />;
+                break;
+              case UpgradeEnum.ENERGY_RECHARGE:
+                upgradeIcon = <TbRecharging className="w-9 h-9 mr-4" />;
+                break;
+              case UpgradeEnum.MULTI_TAP:
+                upgradeIcon = <PiHandTapFill className="w-9 h-9 mr-4" />;
+            }
+
+            return (
+              <div
+                key={index}
+                className="flex items-center justify-between bg-primary-1 text-white p-4 mb-4 rounded-3xl shadow-lg active:opacity-75"
+                aria-hidden
+                onClick={handleClick({
+                  description,
+                  amount: amount.toLocaleString(),
+                  name,
+                  effect,
+                  id,
+                })}>
+                {/* Booster Icon */}
+                <div className="flex items-center">
+                  {upgradeIcon}
+                  <div className="font-inter">
+                    <div className="font-semibold">
+                      {upgrade.upgrade_detail.name}
+                    </div>
+                    <div className="flex items-center text-sm font-normal">
+                      <img
+                        src={CoinSVG} // Replace with coin icon
+                        alt="Coin Icon"
+                        className="w-4 h-4 mr-1"
+                      />
+                      {amount.toLocaleString()}
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              {/* Arrow Icon */}
-              <div className="text-white text-lg">
-                <IonIcon icon={chevronForwardOutline} className="text-3xl" />
+                {/* Arrow Icon */}
+                <div className="text-white text-lg font-normal">
+                  <IonIcon icon={chevronForwardOutline} className="text-3xl" />
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </IonContent>
-      <BoosterItemDetailModal />
+      <BoosterItemDetailModal
+        setIsOpen={setInnerIsOpen}
+        isOpen={innerIsOpen}
+        {...bmipVal}
+      />
     </IonModal>
   );
 };
 
 type TBoosterModalProps = {
+  upgrades: TUpgradeOverall[];
   isOpen: boolean;
   setIsOpen: (val: boolean) => void;
 };

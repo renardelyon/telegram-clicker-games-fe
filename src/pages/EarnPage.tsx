@@ -1,5 +1,4 @@
 import { IonCard, IonCardContent, IonProgressBar } from '@ionic/react';
-
 import { useEffect, useMemo, useState } from 'react';
 import { TbPick } from 'react-icons/tb';
 import ButtonTransparent from '@/components/ButtonTransparent';
@@ -10,9 +9,13 @@ import UpgradeEnum from '@/enum/UpgradeEnum';
 import errorHandler from '@/utils/error';
 import BoosterModal from '@/components/BoosterModal';
 import '@/style/css/EarnPage.css';
+import { TUpgradeOverall } from '@/type/TUpgrade';
 
 const EarnPage = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
+  const [upgrades, setUpgrades] = useState<TUpgradeOverall[]>();
+
+  const resetErrorToast = useBoundStore.use.resetErrorToast();
   const setErrorToast = useBoundStore.use.setErrorToast();
   const incrementEnergy = useBoundStore.use.incrementEnergy();
   const setEnergy = useBoundStore.use.setEnergy();
@@ -21,10 +24,15 @@ const EarnPage = () => {
   const {
     data: upgradeData,
     error: upgradeErr,
+    isSuccess: upgradeIsSuccess,
     isError: upgradeIsError,
   } = useGetUpgrades();
 
   useEffect(() => {
+    if (upgradeIsSuccess) {
+      resetErrorToast();
+      setUpgrades(upgradeData.data.data);
+    }
     if (upgradeIsError) {
       errorHandler({
         error: upgradeErr,
@@ -37,7 +45,7 @@ const EarnPage = () => {
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [upgradeIsError, upgradeErr]);
+  }, [upgradeIsError, upgradeErr, upgradeIsSuccess, upgradeData]);
 
   const multiTapUpgrade = useMemo(() => {
     return upgradeData?.data.data
@@ -171,7 +179,11 @@ const EarnPage = () => {
           </span>
         ))}
         {/* Modal */}
-        <BoosterModal isOpen={isOpen} setIsOpen={setIsOpen} />
+        <BoosterModal
+          isOpen={isOpen}
+          setIsOpen={setIsOpen}
+          upgrades={upgrades || []}
+        />
       </div>
     </>
   );

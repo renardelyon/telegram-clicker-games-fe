@@ -1,6 +1,9 @@
+import useBoundStore from '@/store/store';
 import axios from 'axios';
 
-export default function setupGlobalAxiosInterceptor(initData: string) {
+export default function setupGlobalAxiosInterceptor() {
+  // TODO: remove initdata
+  const initData = useBoundStore.use.initdata();
   axios.interceptors.request.use(config => {
     config.headers['X-init-telegram-data'] =
       initData ||

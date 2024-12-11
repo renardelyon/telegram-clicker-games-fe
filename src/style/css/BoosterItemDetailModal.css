@@ -34,15 +34,10 @@
 
 .modal-body .avatar {
   margin: 20px auto;
-  width: 80px;
-  height: 80px;
-  background: white;
-  border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 3rem;
-  color: #1a2b5a;
 }
 
 .modal-body .description {

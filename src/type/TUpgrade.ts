@@ -9,6 +9,7 @@ export type TUpgrade = {
 
 export type TUpgradeDetail = {
   id: string;
+  name: string;
   max_level: number;
   base_cost: number;
   description: string;

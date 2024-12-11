@@ -25,6 +25,7 @@ const initialValue: UserData = {
     telegram_id: 0,
     upgrades: [],
     user_name: '',
+    photo_url: '',
     deleted_at: '',
     last_name: '',
     updated_at: '',
