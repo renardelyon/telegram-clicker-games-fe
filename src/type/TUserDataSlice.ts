@@ -9,6 +9,7 @@ type UserDataAction = {
   addBalance: (val: number) => void;
   decrementEnergy: (val: number) => void;
   incrementEnergy: (val: number) => void;
+  incrementEnergyWithCallback: (callback: (energy: number) => number) => void;
   setEnergy: (val: number) => void;
 };
 

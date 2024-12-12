@@ -1,5 +1,5 @@
 import { IonCard, IonCardContent, IonProgressBar } from '@ionic/react';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { TbPick } from 'react-icons/tb';
 import ButtonTransparent from '@/components/ButtonTransparent';
 import useBoundStore from '@/store/store';
@@ -10,15 +10,18 @@ import errorHandler from '@/utils/error';
 import BoosterModal from '@/components/BoosterModal';
 import '@/style/css/EarnPage.css';
 import { TUpgradeOverall } from '@/type/TUpgrade';
+import CoinSVG from '@/assets/coin_pixel.svg';
+import { BsFillLightningChargeFill } from 'react-icons/bs';
 
 const EarnPage = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [upgrades, setUpgrades] = useState<TUpgradeOverall[]>();
+  const intervalRef = useRef<number | null>(null);
 
   const resetErrorToast = useBoundStore.use.resetErrorToast();
   const setErrorToast = useBoundStore.use.setErrorToast();
-  const incrementEnergy = useBoundStore.use.incrementEnergy();
-  const setEnergy = useBoundStore.use.setEnergy();
+  const incrementEnergyWithCallback =
+    useBoundStore.use.incrementEnergyWithCallback();
   const states = useBoundStore.use.user().game_states;
 
   const {
@@ -67,34 +70,54 @@ const EarnPage = () => {
     return states.base_energy * (energyLimitUpgrade?.upgrade.level || 1);
   }, [upgradeData, states.base_energy]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      if (states.energy >= maxEnergy) {
-        return;
-      }
+  const progressBarValue = useMemo(() => {
+    return states.energy / maxEnergy;
+  }, [states.energy, maxEnergy]);
 
-      const incrementedEnergy = (() => {
-        const incrementUnit = energyRechargeUpgrade?.upgrade.level || 0;
-        if (states.energy + incrementUnit > maxEnergy) {
-          return states.energy + incrementUnit - maxEnergy;
+  const startInterval = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+
+    intervalRef.current = setInterval(() => {
+      incrementEnergyWithCallback(energy => {
+        if (energy >= maxEnergy) {
+          return 0;
         }
 
-        return incrementUnit;
-      })();
+        const incrementedEnergy = (() => {
+          const incrementUnit = energyRechargeUpgrade?.upgrade.level || 0;
+          if (energy + incrementUnit > maxEnergy) {
+            return maxEnergy - energy;
+          }
 
-      incrementEnergy(incrementedEnergy);
+          return incrementUnit;
+        })();
+
+        return incrementedEnergy;
+      });
     }, 1000);
+  };
 
-    return () => clearInterval(interval);
-  }, [
-    states.energy,
-    maxEnergy,
-    incrementEnergy,
-    setEnergy,
-    energyRechargeUpgrade?.upgrade.level,
-  ]);
+  const stopInterval = () => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = null;
+    }
+  };
 
-  const { clicks, handleClick } = useTaps(multiTapUpgrade);
+  useEffect(() => {
+    startInterval();
+
+    return () => stopInterval();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [maxEnergy, energyRechargeUpgrade?.upgrade.level]);
+
+  const { clicks, handleClick, handleAnimationEnd } = useTaps(
+    startInterval,
+    stopInterval,
+    multiTapUpgrade,
+  );
 
   return (
     <>
@@ -115,7 +138,8 @@ const EarnPage = () => {
               <h6>BOOST</h6>
             </ButtonTransparent>
           </div>
-          <div className="ion-card-mining flex items-center h-full">
+          {/* Change hidden to flex if mining rate logic have been determined */}
+          <div className="ion-card-mining items-center h-full hidden">
             <IonCard className="grad-color-bg-meme-coin bg-opacity-70 rounded-lg shadow-md">
               <IonCardContent className="font-pixel text-3xl text-white">
                 <div className="flex items-center justify-center gap-4">
@@ -132,35 +156,33 @@ const EarnPage = () => {
           {/* Coins Section */}
           <div className="flex items-center justify-center">
             <img
-              src="https://via.placeholder.com/40" // Replace with actual coin image URL
+              src={CoinSVG} // Replace with actual coin image URL
               alt="Coin"
               className="w-10 h-10"
             />
-            <h2 className="text-white font-pixel ml-5">${states.balance}</h2>
+            <h2 className="text-white font-pixel ml-5">
+              {states.balance.toLocaleString()}
+            </h2>
           </div>
-          <img
-            src="/doge_char.png"
-            id="coin-click"
-            alt="coin"
-            className="w-auto"
-            onClick={handleClick}
-            aria-hidden
-          />
+          <div onClick={handleClick} aria-hidden>
+            <img
+              src="/doge_char.png"
+              id="coin-click"
+              alt="coin"
+              className="w-auto"
+            />
+          </div>
           <div className="w-full max-w-md mx-auto mt-6">
             {/* Progress Bar Container */}
             <div className="relative">
               <IonProgressBar
-                value={0.6}
+                value={progressBarValue}
                 className="h-4 progress-bar-energy rounded-2xl"
               />
 
               {/* Energy Info */}
               <div className="flex justify-end items-center mt-2 text-white text-sm font-pixel">
-                <img
-                  src="/path/to/lightning-icon.png" // Replace with your lightning icon path
-                  alt="Lightning"
-                  className="w-5 h-5 mr-2"
-                />
+                <BsFillLightningChargeFill className="text-3xl mr-2 text-[#FDAD16]" />
                 <p className="text-white font-pixel text-xl mt-2">
                   {states.energy}/{maxEnergy}
                 </p>
@@ -170,13 +192,14 @@ const EarnPage = () => {
         </div>
 
         {/* Click Effects */}
-        {clicks.map(elem => (
-          <span
-            key={elem.id}
-            className="absolute text-3xl text-orange-300 font-pixel animate-fadeUp"
-            style={{ left: elem.left, top: elem.top }}>
-            +1
-          </span>
+        {clicks.map(click => (
+          <div
+            key={click.id}
+            className="absolute text-5xl font-bold opacity-0 text-white pointer-events-none animate-fadeUp"
+            style={{ left: click.x, top: click.y }}
+            onAnimationEnd={handleAnimationEnd(click.id)}>
+            +{multiTapUpgrade?.upgrade.level}
+          </div>
         ))}
         {/* Modal */}
         <BoosterModal

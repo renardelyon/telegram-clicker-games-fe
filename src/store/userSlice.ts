@@ -72,6 +72,22 @@ const createUserSlice: StateCreator<
           },
         },
       })),
+    incrementEnergyWithCallback: callback =>
+      set(state => {
+        const {
+          game_states: { energy },
+        } = state.user;
+        const updatedEnergy = callback(energy);
+        return {
+          user: {
+            ...state.user,
+            game_states: {
+              ...state.user.game_states,
+              energy: state.user.game_states.energy + updatedEnergy,
+            },
+          },
+        };
+      }),
     setEnergy: val =>
       set(state => ({
         user: {

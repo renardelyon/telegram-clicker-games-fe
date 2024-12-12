@@ -6,9 +6,15 @@ import { TUpgradeOverall } from '@/type/TUpgrade';
 import errorHandler from '@/utils/error';
 import { useEffect, useState } from 'react';
 
-const useTaps = (upgrade?: TUpgradeOverall) => {
+const useTaps = (
+  startInterval: () => void,
+  stopInterval: () => void,
+  upgrade?: TUpgradeOverall,
+) => {
   const [clickCount, setClickCount] = useState<number>(0);
-  const [clicks, setClicks] = useState<{ [key: string]: number }[]>([]);
+  const [clicks, setClicks] = useState<{ id: number; x: number; y: number }[]>(
+    [],
+  );
   const [sendTimer, setSendTimer] = useState<number>(); // Timer for sending data
 
   const resetErrorToast = useBoundStore.use.resetErrorToast();
@@ -21,6 +27,7 @@ const useTaps = (upgrade?: TUpgradeOverall) => {
     successSideEffect: () => {
       resetErrorToast();
       setClickCount(0);
+      startInterval();
     },
     onError: err => {
       errorHandler({
@@ -41,6 +48,8 @@ const useTaps = (upgrade?: TUpgradeOverall) => {
     if (sendTimer) {
       clearTimeout(sendTimer);
     }
+
+    stopInterval();
 
     // Start a new timer
     const timer = setTimeout(() => {
@@ -66,8 +75,8 @@ const useTaps = (upgrade?: TUpgradeOverall) => {
   const handleClick = (e: React.MouseEvent) => {
     const newClick = {
       id: Date.now(),
-      left: e.clientX,
-      top: e.clientY,
+      x: e.pageX,
+      y: e.pageY,
     };
 
     if (!upgrade) {
@@ -86,15 +95,16 @@ const useTaps = (upgrade?: TUpgradeOverall) => {
     setClickCount(state => state + 1);
     addBalance(upgrade?.upgrade.level || 1);
     decrementEnergy(upgrade?.upgrade.level || 1);
+  };
 
-    setTimeout(() => {
-      setClicks(prev => prev.filter(click => click.id !== newClick.id));
-    }, 1000);
+  const handleAnimationEnd = (id: number) => () => {
+    setClicks(prev => prev.filter(click => click.id !== id));
   };
 
   return {
     clicks,
     handleClick,
+    handleAnimationEnd,
   };
 };
 
