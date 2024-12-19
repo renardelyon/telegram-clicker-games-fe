@@ -12,8 +12,9 @@ import '@/style/css/EarnPage.css';
 import { TUpgradeOverall } from '@/type/TUpgrade';
 import CoinSVG from '@/assets/coin_pixel.svg';
 import { BsFillLightningChargeFill } from 'react-icons/bs';
+import WithInitData from '@/components/WithInitData';
 
-const EarnPage = () => {
+const EarnPageTemp = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [upgrades, setUpgrades] = useState<TUpgradeOverall[]>();
   const intervalRef = useRef<number | null>(null);
@@ -211,5 +212,7 @@ const EarnPage = () => {
     </>
   );
 };
+
+const EarnPage = WithInitData(EarnPageTemp);
 
 export default EarnPage;

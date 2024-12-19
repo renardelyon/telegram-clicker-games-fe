@@ -29,8 +29,10 @@ import { useAddReferral } from '@/api/referral';
 
 const TabRoute = () => {
   const [signInSuccessStatus, setSignInSuccessStatus] = useState(false);
+
   const resetErrorToast = useBoundStore.use.resetErrorToast();
   const setErrorToast = useBoundStore.use.setErrorToast();
+  const setInitData = useBoundStore.use.setInitData();
   const errToastIsOpen = useBoundStore.use.isOpen();
   const errToastMsg = useBoundStore.use.message();
 
@@ -77,6 +79,7 @@ const TabRoute = () => {
     const WebApp = (await import('@twa-dev/sdk')).default;
     WebApp.ready();
 
+    setInitData(WebApp.initData);
     signInMutate.mutate();
     if (WebApp.initDataUnsafe.start_param) {
       referralMutate.mutate({

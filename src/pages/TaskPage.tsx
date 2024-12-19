@@ -92,9 +92,12 @@ const TaskPage = () => {
             key={index}
             className=" mt-4 p-[3px] rounded-2xl bg-gradient-to-r from-[#1D97F1] via-[#203A68] to-[#020D2F]">
             <TaskItemCard
-              buttonText={val.task_detail.reward_amount.toLocaleString()}
+              buttonText="Claim"
               iconUrl={TaskToIcon[val.task_detail.description]}
               taskName={val.task_detail.name}
+              taskDesc={val.task_detail.description}
+              taskId={val.task_detail.id}
+              taskStatus={val.task.status}
             />
           </div>
         ))}
@@ -111,9 +114,12 @@ const TaskPage = () => {
           {taskRecurrent.map((val, index) => (
             <TaskItemCard
               key={index}
-              buttonText={val.task_detail.reward_amount.toLocaleString()}
+              buttonText="Claim"
               iconUrl={TaskToIcon[val.task_detail.description]}
               taskName={val.task_detail.name}
+              taskDesc={val.task_detail.description}
+              taskId={val.task_detail.id}
+              taskStatus={val.task.status}
             />
           ))}
         </div>
@@ -130,9 +136,12 @@ const TaskPage = () => {
           {taskOneTime.map((val, index) => (
             <TaskItemCard
               key={index}
-              buttonText={val.task_detail.reward_amount.toLocaleString()}
+              buttonText="Claim"
               iconUrl={TaskToIcon[val.task_detail.description]}
               taskName={val.task_detail.name}
+              taskDesc={val.task_detail.description}
+              taskId={val.task_detail.id}
+              taskStatus={val.task.status}
             />
           ))}
         </div>

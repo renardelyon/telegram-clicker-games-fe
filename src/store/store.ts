@@ -1,13 +1,14 @@
 import { DEV } from '@/env/env';
 import { UserDataSlice } from '@/type/TUserDataSlice';
-import { WithSelectors } from '@/utils/type';
+import { getKeys, WithSelectors } from '@/utils/type';
 import { mountStoreDevtool } from 'simple-zustand-devtools';
 import { UseBoundStore, StoreApi, create } from 'zustand';
 import createUserSlice from './userSlice';
 import createErrorToastSlice from './errorToastSlice';
 import createInitDataSlice from './initDataSlice';
 import { ErrorToastSlice } from '@/type/TErrorToastSlice';
-import { InitDataSlice } from '@/type/TInitData';
+import { InitData, InitDataSlice } from '@/type/TInitData';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
   _store: S,
@@ -24,11 +25,25 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
 
 type GroupedSlice = UserDataSlice & ErrorToastSlice & InitDataSlice;
 
-const useBoundStoreBase = create<GroupedSlice>()((...a) => ({
-  ...createUserSlice(...a),
-  ...createErrorToastSlice(...a),
-  ...createInitDataSlice(...a),
-}));
+const useBoundStoreBase = create<GroupedSlice>()(
+  persist(
+    (...a) => ({
+      ...createUserSlice(...a),
+      ...createErrorToastSlice(...a),
+      ...createInitDataSlice(...a),
+    }),
+    {
+      name: 'user-init-data',
+      storage: createJSONStorage(() => sessionStorage),
+      partialize: state =>
+        Object.fromEntries(
+          Object.entries(state).filter(([key]) =>
+            getKeys<InitData>()(['initdata']).includes(key as keyof InitData),
+          ),
+        ),
+    },
+  ),
+);
 
 if (DEV) {
   mountStoreDevtool('Store', useBoundStoreBase);

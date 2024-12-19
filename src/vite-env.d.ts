@@ -6,6 +6,9 @@ interface ImportMetaEnv {
   readonly VITE_SEND_DELAY: number;
   readonly VITE_BOT_APP: string;
   readonly VITE_SHARE_URL: string;
+  readonly VITE_TWITTER_USERNAME: string;
+  readonly VITE_TELEGRAM_GROUP_LINK: string;
+  readonly VITE_TIKTOK_USERNAME: string;
 }
 
 interface ImportMeta {

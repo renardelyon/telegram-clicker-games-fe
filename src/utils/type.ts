@@ -9,4 +9,8 @@ type FunctionPropertyNames<T> = {
 
 type WithoutFunctions<T> = Omit<T, FunctionPropertyNames<T>>;
 
+export function getKeys<T extends object>() {
+  return <K extends keyof T>(keys: K[]) => keys;
+}
+
 export type { WithSelectors, WithoutFunctions };

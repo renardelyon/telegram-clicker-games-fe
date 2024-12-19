@@ -1,5 +1,6 @@
 import { VITE_API_URL } from '@/env/env';
 import { TBEResponse } from '@/type/response';
+import { TReferral } from '@/type/TReferral';
 import { TUserProfile } from '@/type/TUserProfile';
 import {
   UseMutationOptions,
@@ -37,6 +38,27 @@ export const useGetReferrals = (
     queryKey: [INVALIDATE_REFERRAL_QUERY_KEY],
     queryFn: ({ signal }) => {
       return axios.get(`${VITE_API_URL}/referral/list`, {
+        signal,
+      });
+    },
+    ...options,
+  });
+};
+
+export const UseGetMyReferral = (
+  options: Omit<
+    UseQueryOptions<AxiosResponse<TBEResponse<TReferral>>>,
+    'queryKey' | 'queryFn'
+  > = {},
+) => {
+  return useQuery<
+    AxiosResponse<TBEResponse<TReferral>, any>,
+    Error,
+    AxiosResponse<TBEResponse<TReferral>, any>
+  >({
+    queryKey: [INVALIDATE_REFERRAL_QUERY_KEY, 'mine'],
+    queryFn: ({ signal }) => {
+      return axios.get(`${VITE_API_URL}/referral/my`, {
         signal,
       });
     },

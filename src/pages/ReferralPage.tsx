@@ -14,14 +14,6 @@ const ReferralPage = () => {
   const resetErrorToast = useBoundStore.use.resetErrorToast();
   const setErrorToast = useBoundStore.use.setErrorToast();
 
-  // TODO: for claim rewards
-  // const handleInviteFriend = () => {
-  //   const inviteLink = `${VITE_BOT_APP}?startapp=${userId}`;
-  //   const shareText = `Join me on this awesome Telegram mini app!`;
-  //   const fullUrl = `https://t.me/share/url?url=${encodeURIComponent(inviteLink)}&text=${encodeURIComponent(shareText)}`;
-  //   openTelegramLink(fullUrl);
-  // };
-
   const {
     data: referralData,
     error: referralError,

@@ -47,3 +47,22 @@ export const useUserSignIn = (
     ...mutationOptions,
   });
 };
+
+export const useCheckTelegramMembership = (
+  options: Omit<
+    UseQueryOptions<AxiosResponse<TBEResponse<{ isMember: boolean }>>>,
+    'queryKey' | 'queryFn'
+  > = {},
+) => {
+  return useQuery<
+    AxiosResponse<TBEResponse<{ isMember: boolean }>, any>,
+    Error,
+    AxiosResponse<TBEResponse<{ isMember: boolean }>, any>
+  >({
+    queryKey: [INVALIDATE_AUTH_QUERY_KEY, 'telegram'],
+    queryFn: ({ signal }) => {
+      return axios.get(`${VITE_API_URL}/auth/telegram/check`, { signal });
+    },
+    ...options,
+  });
+};
