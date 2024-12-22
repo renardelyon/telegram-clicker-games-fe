@@ -64,49 +64,14 @@ const useTask = (): TUseTaskResult => {
 
   const handleFollowTwitterClick = (taskId: string) => () => {
     const url = `https://twitter.com/intent/follow?screen_name=${VITE_TWITTER_USERNAME}`;
-    const openedWindow = window.open(url, '_blank', 'noopener,noreferrer');
+    window.open(url, '_blank', 'noopener,noreferrer');
 
-    if (
-      !openedWindow ||
-      openedWindow.closed ||
-      typeof openedWindow.closed === 'undefined'
-    ) {
-      errorHandler({
-        error: new Error('Window blocked'),
-        axiosErrorHandlerFn: errMsg => {
-          setErrorToast({ isOpen: true, message: errMsg || '' });
-        },
-        generalErrorHandlerFn: err => {
-          setErrorToast({ isOpen: true, message: err.message || '' });
-        },
-      });
-
-      return;
-    }
     taskMutate.mutate({ status: TaskStatusEnum.COMPLETE, task_id: taskId });
   };
 
   const handleFollowTiktokClick = (taskId: string) => () => {
     const url = `https://www.tiktok.com/${VITE_TIKTOK_USERNAME}`;
-    const openedWindow = window.open(url, '_blank', 'noopener,noreferrer');
-
-    if (
-      !openedWindow ||
-      openedWindow.closed ||
-      typeof openedWindow.closed === 'undefined'
-    ) {
-      errorHandler({
-        error: new Error('Window blocked'),
-        axiosErrorHandlerFn: errMsg => {
-          setErrorToast({ isOpen: true, message: errMsg || '' });
-        },
-        generalErrorHandlerFn: err => {
-          setErrorToast({ isOpen: true, message: err.message || '' });
-        },
-      });
-
-      return;
-    }
+    window.open(url, '_blank', 'noopener,noreferrer');
 
     taskMutate.mutate({ status: TaskStatusEnum.COMPLETE, task_id: taskId });
   };
