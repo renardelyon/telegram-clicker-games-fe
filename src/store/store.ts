@@ -9,6 +9,8 @@ import createInitDataSlice from './initDataSlice';
 import { ErrorToastSlice } from '@/type/TErrorToastSlice';
 import { InitData, InitDataSlice } from '@/type/TInitData';
 import { createJSONStorage, persist } from 'zustand/middleware';
+import createWalletDataSlice from './walletDataSlice';
+import { TWalletData, WalletDataSlice } from '@/type/TWalletData';
 
 const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
   _store: S,
@@ -23,7 +25,10 @@ const createSelectors = <S extends UseBoundStore<StoreApi<object>>>(
   return store;
 };
 
-type GroupedSlice = UserDataSlice & ErrorToastSlice & InitDataSlice;
+type GroupedSlice = UserDataSlice &
+  ErrorToastSlice &
+  InitDataSlice &
+  WalletDataSlice;
 
 const useBoundStoreBase = create<GroupedSlice>()(
   persist(
@@ -31,14 +36,28 @@ const useBoundStoreBase = create<GroupedSlice>()(
       ...createUserSlice(...a),
       ...createErrorToastSlice(...a),
       ...createInitDataSlice(...a),
+      ...createWalletDataSlice(...a),
     }),
     {
       name: 'user-init-data',
-      storage: createJSONStorage(() => sessionStorage),
+      storage: createJSONStorage(() => localStorage),
       partialize: state =>
         Object.fromEntries(
-          Object.entries(state).filter(([key]) =>
-            getKeys<InitData>()(['initdata']).includes(key as keyof InitData),
+          Object.entries(state).filter(
+            ([key]) =>
+              getKeys<InitData>()(['initdata']).includes(
+                key as keyof InitData,
+              ) ||
+              getKeys<TWalletData>()([
+                'session',
+                'walletStatus',
+                'publicKey',
+                'encryptPubKey',
+                'data',
+                'nonce',
+                'sharedSecret',
+                'keypair',
+              ]).includes(key as keyof TWalletData),
           ),
         ),
     },

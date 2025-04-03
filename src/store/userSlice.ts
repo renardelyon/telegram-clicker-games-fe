@@ -18,6 +18,7 @@ const initialValue: UserData = {
     is_premium: false,
     language_code: '',
     referral: {
+      new_user_referred: 0,
       referrals: [],
       referred_by: 0,
     },

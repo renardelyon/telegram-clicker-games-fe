@@ -26,13 +26,21 @@ import { useEffect, useState } from 'react';
 import useBoundStore from '@/store/store';
 import errorHandler from '@/utils/error';
 import { useAddReferral } from '@/api/referral';
+import { TWalletData, TWalletError } from '@/type/TWalletData';
 
 const TabRoute = () => {
   const [signInSuccessStatus, setSignInSuccessStatus] = useState(false);
+  const [walletConnectToastIsOpen, setwalletConnectToastIsOpen] =
+    useState(false);
+  const [walletConnectToastMessage, setwalletConnectToastMessage] =
+    useState('');
 
   const resetErrorToast = useBoundStore.use.resetErrorToast();
   const setErrorToast = useBoundStore.use.setErrorToast();
   const setInitData = useBoundStore.use.setInitData();
+  const setWalletData = useBoundStore.use.setWalletData();
+  const setWalletStatus = useBoundStore.use.setWalletStatus();
+  const resetWalletData = useBoundStore.use.resetWalletData();
   const errToastIsOpen = useBoundStore.use.isOpen();
   const errToastMsg = useBoundStore.use.message();
 
@@ -81,10 +89,35 @@ const TabRoute = () => {
 
     setInitData(WebApp.initData);
     signInMutate.mutate();
-    if (WebApp.initDataUnsafe.start_param) {
-      referralMutate.mutate({
-        referred_by: Number(WebApp.initDataUnsafe.start_param),
-      });
+
+    const startParam = WebApp.initDataUnsafe.start_param;
+
+    if (!startParam) {
+      return;
+    }
+
+    try {
+      const res = Buffer.from(startParam, 'base64').toString();
+
+      const data: TWalletData | TWalletError = JSON.parse(res);
+      if ('errorCode' in data || 'errorMessage' in data) {
+        setErrorToast({ isOpen: true, message: data.errorMessage || '' });
+      } else {
+        setwalletConnectToastIsOpen(true);
+        setwalletConnectToastMessage('Wallet successfully connected');
+        setWalletData(data as TWalletData);
+        setWalletStatus('connected');
+      }
+    } catch (e) {
+      if (/disconnect/.test(startParam)) {
+        resetWalletData();
+      } else {
+        if (Number.isNaN(Number(WebApp.initDataUnsafe.start_param))) return;
+
+        referralMutate.mutate({
+          referred_by: Number(WebApp.initDataUnsafe.start_param),
+        });
+      }
     }
   };
 
@@ -190,6 +223,17 @@ const TabRoute = () => {
         isOpen={errToastIsOpen}
         color="danger"
         message={errToastMsg}
+        swipeGesture="vertical"
+        position="top"
+        onDidDismiss={() => {
+          resetErrorToast();
+        }}
+        cssClass="toast-error"
+      />
+      <IonToast
+        isOpen={walletConnectToastIsOpen}
+        color="success"
+        message={walletConnectToastMessage}
         swipeGesture="vertical"
         position="top"
         onDidDismiss={() => {

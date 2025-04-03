@@ -9,6 +9,9 @@ interface ImportMetaEnv {
   readonly VITE_TWITTER_USERNAME: string;
   readonly VITE_TELEGRAM_GROUP_LINK: string;
   readonly VITE_TIKTOK_USERNAME: string;
+  readonly VITE_CHAIN_CLUSTER: string;
+  readonly VITE_APP_URL: string;
+  readonly VITE_WALLET_WEBHOOK: string;
 }
 
 interface ImportMeta {

@@ -1,12 +1,65 @@
 import ButtonTransparent from '@/components/ButtonTransparent';
+import {
+  VITE_APP_URL,
+  VITE_CHAIN_CLUSTER,
+  VITE_WALLET_WEBHOOK,
+} from '@/env/env';
+import { useEffect } from 'react';
+import bs58 from 'bs58';
+import nacl from 'tweetnacl';
+import useBoundStore from '@/store/store';
+import { decryptPayload } from '@/utils/crypto';
+import { PublicKey } from '@solana/web3.js';
 
 const SwapPage = () => {
+  const nonce = useBoundStore.use.nonce();
+  const data = useBoundStore.use.data();
+  // const sharedSecret = useBoundStore.use.sharedSecret();
+  const encryptPubKey = useBoundStore.use.encryptPubKey();
+  const walletStatus = useBoundStore.use.walletStatus();
+  const setSession = useBoundStore.use.setSession();
+  const setSharedSecret = useBoundStore.use.setSharedSecret();
+  const setPublicKey = useBoundStore.use.setPublicKey();
+  const setKeypair = useBoundStore.use.setKeypair();
+  const keypair = useBoundStore.use.keypair();
+
+  useEffect(() => {
+    setKeypair(nacl.box.keyPair());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (walletStatus == 'connected') {
+      const appSharedSecret = nacl.box.before(
+        bs58.decode(encryptPubKey),
+        new Uint8Array(Object.values(keypair!.secretKey)),
+      );
+
+      const connectedData = decryptPayload(data, nonce, appSharedSecret);
+      setSession(connectedData.session);
+      setSharedSecret(appSharedSecret);
+      setPublicKey(new PublicKey(connectedData.public_key));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [nonce, data, encryptPubKey, walletStatus]);
+
+  const connect = async () => {
+    const params = new URLSearchParams({
+      cluster: VITE_CHAIN_CLUSTER,
+      app_url: VITE_APP_URL,
+      dapp_encryption_public_key: bs58.encode(keypair!.publicKey),
+      redirect_link: `${VITE_WALLET_WEBHOOK}/wallets/onConnect`,
+    });
+
+    const url = `https://phantom.app/ul/v1/connect?${params.toString()}`;
+    window.Telegram.WebApp.openLink(url);
+  };
   return (
     <div className="relative container h-screen w-screen bg-no-repeat bg-cover bg-center p-6 pt-12">
       <div className="h-screen flex flex-col items-center justify-start">
         {/* Connect Wallet Button */}
         <div className="flex justify-end w-full mb-4">
-          <ButtonTransparent className="rounded-3xl">
+          <ButtonTransparent onClick={connect} className="rounded-3xl">
             <span
               role="img"
               aria-label="rocket"
@@ -15,6 +68,7 @@ const SwapPage = () => {
             </span>
             CONNECT WALLET
           </ButtonTransparent>
+          {/* <WalletMultiButton /> */}
         </div>
 
         {/* Swap Title */}
