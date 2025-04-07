@@ -18,6 +18,19 @@ export const decryptPayload = (
   return JSON.parse(Buffer.from(decryptedData).toString('utf8'));
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const encryptPayload = (payload: any, sharedSecret: Uint8Array) => {
+  const nonce = nacl.randomBytes(24);
+
+  const encryptedPayload = nacl.box.after(
+    Buffer.from(JSON.stringify(payload)),
+    nonce,
+    sharedSecret,
+  );
+
+  return [nonce, encryptedPayload];
+};
+
 export const isBase64 = (str: string) => {
   try {
     base64.toByteArray(str); // Decode test

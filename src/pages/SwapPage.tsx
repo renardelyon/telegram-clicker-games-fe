@@ -4,11 +4,11 @@ import {
   VITE_CHAIN_CLUSTER,
   VITE_WALLET_WEBHOOK,
 } from '@/env/env';
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import bs58 from 'bs58';
 import nacl from 'tweetnacl';
 import useBoundStore from '@/store/store';
-import { decryptPayload } from '@/utils/crypto';
+import { decryptPayload, encryptPayload } from '@/utils/crypto';
 import { PublicKey } from '@solana/web3.js';
 
 const SwapPage = () => {
@@ -21,7 +21,19 @@ const SwapPage = () => {
   const setSharedSecret = useBoundStore.use.setSharedSecret();
   const setPublicKey = useBoundStore.use.setPublicKey();
   const setKeypair = useBoundStore.use.setKeypair();
+  const setWalletStatus = useBoundStore.use.setWalletStatus();
   const keypair = useBoundStore.use.keypair();
+  const session = useBoundStore.use.session();
+  const sharedSecret = useBoundStore.use.sharedSecret();
+
+  const appPublicKey = useMemo(
+    () => new Uint8Array(Object.values(keypair?.publicKey || {})),
+    [keypair],
+  );
+  const appSecretKey = useMemo(
+    () => new Uint8Array(Object.values(keypair?.secretKey || {})),
+    [keypair],
+  );
 
   useEffect(() => {
     setKeypair(nacl.box.keyPair());
@@ -32,13 +44,17 @@ const SwapPage = () => {
     if (walletStatus == 'connected') {
       const appSharedSecret = nacl.box.before(
         bs58.decode(encryptPubKey),
-        new Uint8Array(Object.values(keypair!.secretKey)),
+        appSecretKey,
       );
 
       const connectedData = decryptPayload(data, nonce, appSharedSecret);
       setSession(connectedData.session);
       setSharedSecret(appSharedSecret);
       setPublicKey(new PublicKey(connectedData.public_key));
+    }
+
+    if (walletStatus == 'disconnected') {
+      setWalletStatus('pending');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nonce, data, encryptPubKey, walletStatus]);
@@ -47,27 +63,56 @@ const SwapPage = () => {
     const params = new URLSearchParams({
       cluster: VITE_CHAIN_CLUSTER,
       app_url: VITE_APP_URL,
-      dapp_encryption_public_key: bs58.encode(keypair!.publicKey),
+      dapp_encryption_public_key: bs58.encode(appPublicKey),
       redirect_link: `${VITE_WALLET_WEBHOOK}/wallets/onConnect`,
     });
 
     const url = `https://phantom.app/ul/v1/connect?${params.toString()}`;
     window.Telegram.WebApp.openLink(url);
   };
+
+  const disconnect = async () => {
+    const payload = {
+      session,
+    };
+
+    const [nonce, encryptedPayload] = encryptPayload(payload, sharedSecret!);
+    const params = new URLSearchParams({
+      dapp_encryption_public_key: bs58.encode(appPublicKey),
+      nonce: bs58.encode(nonce),
+      redirect_link: `${VITE_WALLET_WEBHOOK}/wallets/onDisconnect`,
+      payload: bs58.encode(encryptedPayload),
+    });
+    const url = `https://phantom.app/ul/v1/disconnect?${params.toString()}`;
+    window.Telegram.WebApp.openLink(url);
+  };
+
   return (
     <div className="relative container h-screen w-screen bg-no-repeat bg-cover bg-center p-6 pt-12">
       <div className="h-screen flex flex-col items-center justify-start">
         {/* Connect Wallet Button */}
         <div className="flex justify-end w-full mb-4">
-          <ButtonTransparent onClick={connect} className="rounded-3xl">
-            <span
-              role="img"
-              aria-label="rocket"
-              className="mr-1 text-2xl justify-self-start -mt-2">
-              💵
-            </span>
-            CONNECT WALLET
-          </ButtonTransparent>
+          {walletStatus == 'connected' ? (
+            <ButtonTransparent onClick={disconnect} className="rounded-3xl">
+              <span
+                role="img"
+                aria-label="rocket"
+                className="mr-1 text-2xl justify-self-start -mt-2">
+                🚀
+              </span>
+              DISCONNECT WALLET
+            </ButtonTransparent>
+          ) : (
+            <ButtonTransparent onClick={connect} className="rounded-3xl">
+              <span
+                role="img"
+                aria-label="rocket"
+                className="mr-1 text-2xl justify-self-start -mt-2">
+                💵
+              </span>
+              CONNECT WALLET
+            </ButtonTransparent>
+          )}
           {/* <WalletMultiButton /> */}
         </div>
 

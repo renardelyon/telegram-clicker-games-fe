@@ -111,6 +111,9 @@ const TabRoute = () => {
     } catch (e) {
       if (/disconnect/.test(startParam)) {
         resetWalletData();
+        setWalletStatus('disconnected');
+        setwalletConnectToastIsOpen(true);
+        setwalletConnectToastMessage('Wallet successfully disconnected');
       } else {
         if (Number.isNaN(Number(WebApp.initDataUnsafe.start_param))) return;
 
