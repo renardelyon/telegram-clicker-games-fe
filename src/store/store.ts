@@ -51,7 +51,7 @@ const useBoundStoreBase = create<GroupedSlice>()(
               getKeys<TWalletData>()([
                 'session',
                 'walletStatus',
-                'publicKey',
+                'walletPublicKey',
                 'encryptPubKey',
                 'data',
                 'nonce',

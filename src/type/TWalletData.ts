@@ -4,7 +4,7 @@ import nacl from 'tweetnacl';
 type TWalletData = {
   walletStatus: 'connected' | 'disconnected' | 'pending';
   sharedSecret: Uint8Array | null;
-  publicKey: PublicKey | null;
+  walletPublicKey: PublicKey | null;
   encryptPubKey: string;
   data: string;
   nonce: string;
@@ -24,7 +24,7 @@ type WalletDataAction = {
   setWalletStatus: (status: TWalletData['walletStatus']) => void;
   setKeypair: (status: TWalletData['keypair']) => void;
   resetWalletData: () => void;
-  setPublicKey: (publicKey: TWalletData['publicKey']) => void;
+  setPublicKey: (publicKey: TWalletData['walletPublicKey']) => void;
 };
 
 type WalletDataSlice = TWalletData & WalletDataAction;

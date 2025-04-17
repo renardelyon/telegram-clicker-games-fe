@@ -5,7 +5,7 @@ const initialValue: TWalletData = {
   walletStatus: 'pending',
   sharedSecret: null,
   session: '',
-  publicKey: null,
+  walletPublicKey: null,
   encryptPubKey: '',
   nonce: '',
   data: '',
@@ -24,7 +24,8 @@ const createWalletDataSlice: StateCreator<
     setSession: (session: string) => set({ session }),
     setSharedSecret: (sharedSecret: TWalletData['sharedSecret']) =>
       set({ sharedSecret }),
-    setPublicKey: (publicKey: TWalletData['publicKey']) => set({ publicKey }),
+    setPublicKey: (walletPublicKey: TWalletData['walletPublicKey']) =>
+      set({ walletPublicKey }),
     setWalletStatus: (status: TWalletData['walletStatus']) =>
       set({ walletStatus: status }),
     setKeypair: (keypair: TWalletData['keypair']) =>

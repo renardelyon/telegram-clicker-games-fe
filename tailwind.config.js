@@ -79,9 +79,6 @@ export default {
           '@apply font-grotesk font-light text-xs tracking-tagline uppercase':
             {},
         },
-        '.quote': {
-          '@apply font-code text-lg leading-normal': {},
-        },
         '.button': {
           '@apply font-pixel text-xs font-bold uppercase tracking-wider': {},
         },

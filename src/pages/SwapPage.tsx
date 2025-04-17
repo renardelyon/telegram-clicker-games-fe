@@ -4,12 +4,20 @@ import {
   VITE_CHAIN_CLUSTER,
   VITE_WALLET_WEBHOOK,
 } from '@/env/env';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import bs58 from 'bs58';
 import nacl from 'tweetnacl';
+
 import useBoundStore from '@/store/store';
 import { decryptPayload, encryptPayload } from '@/utils/crypto';
-import { PublicKey } from '@solana/web3.js';
+import { Connection, LAMPORTS_PER_SOL, PublicKey } from '@solana/web3.js';
+import { AnchorProvider, Wallet } from '@coral-xyz/anchor';
+import { PumpFunCaller } from '@/utils/pumpfun';
+
+const targetMint = new PublicKey(
+  'FVpyaVqtrHCL9RHQ7nt29ib3Q9dR4mHut4mWHqRCpump',
+);
+const SLIPPAGE_BASIS_POINTS = 100n;
 
 const SwapPage = () => {
   const nonce = useBoundStore.use.nonce();
@@ -22,9 +30,35 @@ const SwapPage = () => {
   const setPublicKey = useBoundStore.use.setPublicKey();
   const setKeypair = useBoundStore.use.setKeypair();
   const setWalletStatus = useBoundStore.use.setWalletStatus();
+  const walletPublicKey = useBoundStore.use.walletPublicKey();
   const keypair = useBoundStore.use.keypair();
   const session = useBoundStore.use.session();
   const sharedSecret = useBoundStore.use.sharedSecret();
+
+  const [pumpfunCaller, setPumpfunCaller] = useState<PumpFunCaller>();
+
+  useEffect(() => {
+    const connection = new Connection(
+      'https://mainnet.helius-rpc.com/?api-key=5eafd528-fef7-4ec4-a952-1a5bf3fa460e',
+    );
+    const dummyWallet = {
+      publicKey: walletPublicKey!,
+      signTransaction: async transaction => {
+        // Dummy signTransaction function
+        return transaction;
+      },
+      signAllTransactions: async transactions => {
+        // Dummy signAllTransactions function
+        return transactions;
+      },
+    } as Wallet;
+    const provider = new AnchorProvider(connection, dummyWallet, {
+      commitment: 'finalized',
+    });
+    const caller = new PumpFunCaller(provider);
+    setPumpfunCaller(caller);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const appPublicKey = useMemo(
     () => new Uint8Array(Object.values(keypair?.publicKey || {})),
@@ -87,6 +121,41 @@ const SwapPage = () => {
     window.Telegram.WebApp.openLink(url);
   };
 
+  const signAndSendTransaction = async () => {
+    if (!walletPublicKey) return;
+
+    const tx = await pumpfunCaller?.buy(
+      walletPublicKey,
+      targetMint,
+      BigInt(0.0001 * LAMPORTS_PER_SOL),
+      SLIPPAGE_BASIS_POINTS,
+      {
+        unitLimit: 250000,
+        unitPrice: 250000,
+      },
+    );
+
+    const serializedTransaction = tx?.serialize({
+      requireAllSignatures: false,
+    });
+
+    const payload = {
+      session,
+      transaction: bs58.encode(serializedTransaction || []),
+    };
+
+    const [nonce, encryptedPayload] = encryptPayload(payload, sharedSecret!);
+    const params = new URLSearchParams({
+      dapp_encryption_public_key: bs58.encode(appPublicKey),
+      nonce: bs58.encode(nonce),
+      redirect_link: `${VITE_WALLET_WEBHOOK}/wallets/signTransaction`,
+      payload: bs58.encode(encryptedPayload),
+    });
+    const url = `https://phantom.app/ul/v1/signAndSendTransaction?${params.toString()}`;
+
+    window.Telegram.WebApp.openLink(url);
+  };
+
   return (
     <div className="relative container h-screen w-screen bg-no-repeat bg-cover bg-center p-6 pt-12">
       <div className="h-screen flex flex-col items-center justify-start">
@@ -125,7 +194,9 @@ const SwapPage = () => {
         <div className="bg-black rounded-lg p-6 w-full max-w-md">
           {/* Buy/Sell Buttons */}
           <div className="flex justify-between mb-4">
-            <button className="bg-green-500 text-white font-bold py-2 px-4 rounded-lg w-1/2 mr-2">
+            <button
+              onClick={signAndSendTransaction}
+              className="bg-green-500 text-white font-bold py-2 px-4 rounded-lg w-1/2 mr-2">
               BUY
             </button>
             <button className="bg-gray-600 text-white font-bold py-2 px-4 rounded-lg w-1/2">
