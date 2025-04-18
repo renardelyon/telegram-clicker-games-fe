@@ -14,4 +14,5 @@ export const {
   VITE_METIS_URL,
   VITE_QUIKNODE_HTTP_ENDPOINT,
   VITE_QUIKNODE_WSS_ENDPOINT,
+  VITE_TARGET_MINT,
 } = import.meta.env;

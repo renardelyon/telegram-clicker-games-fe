@@ -17,7 +17,7 @@ import WithInitData from '@/components/WithInitData';
 const EarnPageTemp = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [upgrades, setUpgrades] = useState<TUpgradeOverall[]>();
-  const intervalRef = useRef<number | null>(null);
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   const resetErrorToast = useBoundStore.use.resetErrorToast();
   const setErrorToast = useBoundStore.use.setErrorToast();

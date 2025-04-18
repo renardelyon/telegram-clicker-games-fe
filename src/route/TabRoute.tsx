@@ -18,7 +18,6 @@ import TaskPage from '../pages/TaskPage';
 import { Redirect, Route } from 'react-router';
 import { IonReactRouter } from '@ionic/react-router';
 import LeaderboardPage from '../pages/LeaderboardPage';
-import SwapPage from '../pages/SwapPage';
 import LanguagePage from '@/pages/LanguagePage';
 import ReferralPage from '@/pages/ReferralPage';
 import { useGetProfile, useUserSignIn } from '@/api/authUser';
@@ -27,6 +26,7 @@ import useBoundStore from '@/store/store';
 import errorHandler from '@/utils/error';
 import { useAddReferral } from '@/api/referral';
 import { TWalletData, TWalletError } from '@/type/TWalletData';
+import SwapPageMobile from '@/pages/SwapPageMobile';
 
 const TabRoute = () => {
   const [signInSuccessStatus, setSignInSuccessStatus] = useState(false);
@@ -114,6 +114,9 @@ const TabRoute = () => {
         setWalletStatus('disconnected');
         setwalletConnectToastIsOpen(true);
         setwalletConnectToastMessage('Wallet successfully disconnected');
+      } else if (/transaction_completed/.test(startParam)) {
+        setwalletConnectToastIsOpen(true);
+        setwalletConnectToastMessage('Transaction Succeed');
       } else {
         if (Number.isNaN(Number(WebApp.initDataUnsafe.start_param))) return;
 
@@ -171,7 +174,7 @@ const TabRoute = () => {
             render={() => <LeaderboardPage />}
             exact={true}
           />
-          <Route path="/swap" render={() => <SwapPage />} exact={true} />
+          <Route path="/swap" render={() => <SwapPageMobile />} exact={true} />
           <Route
             path="/account/language"
             exact={true}

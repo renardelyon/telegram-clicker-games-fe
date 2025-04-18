@@ -12,6 +12,7 @@ interface ImportMetaEnv {
   readonly VITE_CHAIN_CLUSTER: string;
   readonly VITE_APP_URL: string;
   readonly VITE_WALLET_WEBHOOK: string;
+  readonly VITE_TARGET_MINT: string;
 }
 
 interface ImportMeta {

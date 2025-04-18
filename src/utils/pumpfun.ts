@@ -2,7 +2,6 @@ import { BN, Program, Provider } from '@coral-xyz/anchor';
 import { PumpFun, IDL } from '../idl/index';
 import {
   Commitment,
-  ComputeBudgetProgram,
   Connection,
   Finality,
   PublicKey,
@@ -16,7 +15,9 @@ import {
   getAssociatedTokenAddress,
 } from '@solana/spl-token';
 import { GlobalAccount } from './globalAccount';
-import { PriorityFee } from './type';
+import { Metaplex } from '@metaplex-foundation/js';
+
+export const SLIPPAGE_BASIS_POINTS = 100n;
 
 export const DEFAULT_COMMITMENT: Commitment = 'finalized';
 export const DEFAULT_FINALITY: Finality = 'finalized';
@@ -29,21 +30,34 @@ export const BONDING_CURVE_SEED = 'bonding-curve';
 export const METADATA_SEED = 'metadata';
 
 export class PumpFunCaller {
-  public program: Program<PumpFun>;
-  public connection: Connection;
+  private program: Program<PumpFun>;
+  private connection: Connection;
+  private metaplex: Metaplex;
+
   constructor(provider?: Provider) {
     this.program = new Program<PumpFun>(IDL as PumpFun, provider);
     this.connection = this.program.provider.connection;
+    this.metaplex = Metaplex.make(this.connection);
   }
 
-  getBondingCurvePDA(mint: PublicKey) {
+  protected get getConnection() {
+    return this.connection;
+  }
+
+  public async getRecentBlockhash(commitment: Commitment = DEFAULT_COMMITMENT) {
+    const blockHash = (await this.connection.getLatestBlockhash(commitment))
+      .blockhash;
+    return blockHash;
+  }
+
+  private getBondingCurvePDA(mint: PublicKey) {
     return PublicKey.findProgramAddressSync(
       [Buffer.from(BONDING_CURVE_SEED), mint.toBuffer()],
       this.program.programId,
     )[0];
   }
 
-  async getBondingCurveAccount(
+  private async getBondingCurveAccount(
     mint: PublicKey,
     commitment: Commitment = DEFAULT_COMMITMENT,
   ) {
@@ -57,7 +71,7 @@ export class PumpFunCaller {
     return BondingCurveAccount.fromBuffer(tokenAccount!.data);
   }
 
-  async getGlobalAccount(commitment: Commitment = DEFAULT_COMMITMENT) {
+  private async getGlobalAccount(commitment: Commitment = DEFAULT_COMMITMENT) {
     const [globalAccountPDA] = PublicKey.findProgramAddressSync(
       [Buffer.from(GLOBAL_ACCOUNT_SEED)],
       new PublicKey(PROGRAM_ID),
@@ -72,7 +86,7 @@ export class PumpFunCaller {
   }
 
   //buy
-  async getBuyInstructions(
+  private async getBuyInstructions(
     buyer: PublicKey,
     mint: PublicKey,
     feeRecipient: PublicKey,
@@ -119,7 +133,25 @@ export class PumpFunCaller {
     return transaction;
   }
 
-  async getBuyInstructionsBySolAmount(
+  public async getBuyAmount(
+    mint: PublicKey,
+    buyAmountSol: bigint,
+    commitment: Commitment = DEFAULT_COMMITMENT,
+  ) {
+    const bondingCurveAccount = await this.getBondingCurveAccount(
+      mint,
+      commitment,
+    );
+    if (!bondingCurveAccount) {
+      throw new Error(`Bonding curve account not found: ${mint.toBase58()}`);
+    }
+
+    const buyAmount = bondingCurveAccount.getBuyPrice(buyAmountSol);
+
+    return buyAmount;
+  }
+
+  protected async getBuyInstructionsBySolAmount(
     buyer: PublicKey,
     mint: PublicKey,
     buyAmountSol: bigint,
@@ -151,43 +183,12 @@ export class PumpFunCaller {
     );
   }
 
-  async buy(
-    buyer: PublicKey,
-    mint: PublicKey,
-    buyAmountSol: bigint,
-    slippageBasisPoints: bigint = 500n,
-    priorityFees?: PriorityFee,
-    commitment: Commitment = DEFAULT_COMMITMENT,
-  ) {
-    const buyTx = await this.getBuyInstructionsBySolAmount(
-      buyer,
-      mint,
-      buyAmountSol,
-      slippageBasisPoints,
-      commitment,
-    );
+  public async getTokenNameFromMint(mintAddressStr: string) {
+    const mint = new PublicKey(mintAddressStr);
+    const metadata = await this.metaplex
+      .nfts()
+      .findByMint({ mintAddress: mint });
 
-    const newTx = new Transaction();
-
-    if (priorityFees) {
-      const modifyComputeUnits = ComputeBudgetProgram.setComputeUnitLimit({
-        units: priorityFees.unitLimit,
-      });
-
-      const addPriorityFee = ComputeBudgetProgram.setComputeUnitPrice({
-        microLamports: priorityFees.unitPrice,
-      });
-      newTx.add(modifyComputeUnits);
-      newTx.add(addPriorityFee);
-    }
-
-    newTx.add(buyTx);
-
-    const blockHash = (await this.connection.getLatestBlockhash(commitment))
-      .blockhash;
-    newTx.recentBlockhash = blockHash;
-    newTx.feePayer = buyer;
-
-    return newTx;
+    return metadata.name;
   }
 }
