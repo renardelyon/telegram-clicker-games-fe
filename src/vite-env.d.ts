@@ -13,6 +13,7 @@ interface ImportMetaEnv {
   readonly VITE_APP_URL: string;
   readonly VITE_WALLET_WEBHOOK: string;
   readonly VITE_TARGET_MINT: string;
+  readonly VITE_HELIUS_RPC: string;
 }
 
 interface ImportMeta {

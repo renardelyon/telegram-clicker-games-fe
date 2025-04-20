@@ -1,6 +1,7 @@
 import {
   VITE_APP_URL,
   VITE_CHAIN_CLUSTER,
+  VITE_HELIUS_RPC,
   VITE_TARGET_MINT,
   VITE_WALLET_WEBHOOK,
 } from '@/env/env';
@@ -29,7 +30,6 @@ const useSwapMobile = (): ISwap => {
   const setSharedSecret = useBoundStore.use.setSharedSecret();
   const setPublicKey = useBoundStore.use.setPublicKey();
   const setKeypair = useBoundStore.use.setKeypair();
-  const setWalletStatus = useBoundStore.use.setWalletStatus();
   const walletPublicKey = useBoundStore.use.walletPublicKey();
   const keypair = useBoundStore.use.keypair();
   const session = useBoundStore.use.session();
@@ -43,9 +43,7 @@ const useSwapMobile = (): ISwap => {
   const [targetMint] = useState(new PublicKey(VITE_TARGET_MINT));
 
   useEffect(() => {
-    const connection = new Connection(
-      'https://mainnet.helius-rpc.com/?api-key=5eafd528-fef7-4ec4-a952-1a5bf3fa460e',
-    );
+    const connection = new Connection(VITE_HELIUS_RPC);
     const dummyWallet = {
       publicKey: walletPublicKey!,
       signTransaction: async transaction => {
@@ -153,9 +151,6 @@ const useSwapMobile = (): ISwap => {
       setPublicKey(new PublicKey(connectedData.public_key));
     }
 
-    if (walletStatus == 'disconnected') {
-      setWalletStatus('pending');
-    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nonce, data, encryptPubKey, walletStatus]);
 

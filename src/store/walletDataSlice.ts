@@ -2,7 +2,7 @@ import { TWalletData, WalletDataSlice } from '@/type/TWalletData';
 import { StateCreator } from 'zustand';
 
 const initialValue: TWalletData = {
-  walletStatus: 'pending',
+  walletStatus: 'disconnected',
   sharedSecret: null,
   session: '',
   walletPublicKey: null,

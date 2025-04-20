@@ -5,6 +5,7 @@ import {
   IonIcon,
   IonRouterOutlet,
   IonToast,
+  isPlatform,
 } from '@ionic/react';
 import {
   cashOutline,
@@ -27,6 +28,7 @@ import errorHandler from '@/utils/error';
 import { useAddReferral } from '@/api/referral';
 import { TWalletData, TWalletError } from '@/type/TWalletData';
 import SwapPageMobile from '@/pages/SwapPageMobile';
+import SwapPageDesktop from '@/pages/SwapPageDesktop';
 
 const TabRoute = () => {
   const [signInSuccessStatus, setSignInSuccessStatus] = useState(false);
@@ -174,7 +176,13 @@ const TabRoute = () => {
             render={() => <LeaderboardPage />}
             exact={true}
           />
-          <Route path="/swap" render={() => <SwapPageMobile />} exact={true} />
+          <Route
+            path="/swap"
+            render={() =>
+              isPlatform('desktop') ? <SwapPageDesktop /> : <SwapPageMobile />
+            }
+            exact={true}
+          />
           <Route
             path="/account/language"
             exact={true}

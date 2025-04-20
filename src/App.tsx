@@ -31,6 +31,7 @@ import TabRoute from './route/TabRoute';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import setupGlobalAxiosInterceptor from './api/setupGlobalAxiosInterceptor';
+import WalletContextProvider from './components/WalletContextProvider';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 300 * 1000 } },
@@ -43,9 +44,11 @@ function App() {
   return (
     <>
       <QueryClientProvider client={queryClient}>
-        <IonApp>
-          <TabRoute></TabRoute>
-        </IonApp>
+        <WalletContextProvider>
+          <IonApp>
+            <TabRoute></TabRoute>
+          </IonApp>
+        </WalletContextProvider>
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </>

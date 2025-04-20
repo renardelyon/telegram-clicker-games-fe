@@ -2,7 +2,7 @@ import { PublicKey } from '@solana/web3.js';
 import nacl from 'tweetnacl';
 
 type TWalletData = {
-  walletStatus: 'connected' | 'disconnected' | 'pending';
+  walletStatus: 'connected' | 'disconnected';
   sharedSecret: Uint8Array | null;
   walletPublicKey: PublicKey | null;
   encryptPubKey: string;
